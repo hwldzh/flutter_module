@@ -23,8 +23,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _callbackMsg = "";
+  String _msgFromNative = "";
 
   static const nativeChannel = const MethodChannel('com.example.flutter/native');
+  static const eventChannel = const EventChannel('com.example.flutter/flutter');
+
+  @override
+  void initState() {
+    super.initState();
+    eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+  }
+
+  _onEvent(Object event) {
+    setState(() {
+      _msgFromNative = event;
+    });
+  }
+
+  _onError(Object error) {
+    setState(() {
+      _msgFromNative = error;
+    });
+  }
 
   //跳转到原生页面，通过MethodChannel
   _jumpToNativePage() async {
@@ -58,6 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(
                   fontSize: 20,
                   color: Colors.blue
+              ),
+            ),
+            Text(
+              _msgFromNative,
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.orange
               ),
             )
           ],
