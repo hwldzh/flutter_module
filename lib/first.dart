@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_module/fourth.dart';
-import 'package:flutter_module/third.dart';
 import 'second.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
@@ -28,29 +26,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const flutterChannel = const MethodChannel("com.example.flutter/flutter");
   static const nativeChannel = const MethodChannel('com.example.flutter/native');
   String _result = "";
-
-  @override
-  void initState() {
-    super.initState();
-    Future<dynamic> handler(MethodCall call) async {
-      switch (call.method) {
-        case 'backAction':
-          setState(() {
-            _result = call.arguments;
-          });
-          if (Navigator.canPop(context)) {
-            Navigator.of(context).pop();
-          } else {
-            nativeChannel.invokeMethod('backAction', 'hello2');
-          }
-          break;
-      }
-    }
-    flutterChannel.setMethodCallHandler(handler);
-  }
 
   //跳转到第二个Flutter页面
   _jumpToSecond() {
@@ -60,16 +37,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _goback() {
-    print("gotoback calling");
     _callBackAction();
   }
 
+  //点击了返回按钮，需要通知原生容器关闭
   Future<void> _callBackAction() async {
     try {
       if(Navigator.canPop(context)) {
         Navigator.of(context).pop();
       } else {
-        nativeChannel.invokeMethod("backAction", "hello1");
+        nativeChannel.invokeMethod("backAction");
       }
     } on PlatformException catch (e) {
 
